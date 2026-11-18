@@ -1,51 +1,51 @@
-# پنل مدیریت کاربران (User Management System)
+# User Management System
 
-این پروژه پیاده‌سازی کامل تسک ارزیابی فنی برای موقعیت شغلی مهندسی نرم‌افزار است که شامل دو بخش **Frontend** (توسعه‌یافته با Next.js و TypeScript) و **Backend** (توسعه‌یافته با زبان Golang و پایگاه داده PostgreSQL) می‌باشد.
-
----
-
-## فهرست مطالب
-
-1. [نحوه اجرای پروژه (How to Run)](#۱-نحوه-اجرای-پروژه)
-2. [تکنولوژی‌ها و کتابخانه‌ها (Tech Stack)](#۲-تکنولوژی‌ها-و-کتابخانه‌های-استفاده‌شده)
-3. [ساختار کلی پروژه (Project Architecture)](#۳-ساختار-کلی-پروژه)
-4. [روش مدیریت State](#۴-روش-مدیریت-state)
-5. [روش مدیریت درخواست‌های API](#۵-روش-مدیریت-درخواست‌های-api)
-6. [دلایل انتخاب راهکارهای اصلی](#۶-دلایل-انتخاب-راهکارهای-اصلی)
-7. [مستندات API](#۷-مستندات-api)
+This project is a complete implementation of a technical assessment task for a Software Engineering position, consisting of two main parts: a **Frontend** (developed with Next.js and TypeScript) and a **Backend** (developed with Golang and PostgreSQL).
 
 ---
 
-## ۱. نحوه اجرای پروژه
+## Table of Contents
 
-### روش اول: اجرای سریع با Docker Compose (پیشنهادی)
+1. [How to Run](#1-how-to-run)
+2. [Tech Stack & Libraries](#2-tech-stack--libraries)
+3. [Project Architecture](#3-project-architecture)
+4. [State Management](#4-state-management)
+5. [API Request Management](#5-api-request-management)
+6. [Key Architectural & Implementation Decisions](#6-key-architectural--implementation-decisions)
+7. [API Documentation](#7-api-documentation)
 
-تنها با داشتن Docker روی سیستم خود، کل اکوسیستم شامل پایگاه‌داده PostgreSQL، سرور Go و کلاینت Next.js را با دستور زیر راه‌اندازی کنید:
+---
+
+## 1. How to Run
+
+### Method 1: Quick Run with Docker Compose (Recommended)
+
+With Docker installed on your system, launch the entire ecosystem (PostgreSQL database, Go backend server, and Next.js client) with a single command:
 
 ```bash
 docker compose up --build
 ```
 
-- **فرانت‌اند:** [http://localhost:3000](http://localhost:3000)
-- **بک‌اند API:** [http://localhost:8080](http://localhost:8080)
-- دیتابیس به صورت خودکار با ۴۷ کاربر اولیه و نمونه (از جمله `Amin Tasharofi`) مایگریت و Seed می‌شود.
+- **Frontend:** [http://localhost:3000](http://localhost:3000)
+- **Backend API:** [http://localhost:8080](http://localhost:8080)
+- The database is automatically migrated and seeded with 47 initial sample users (including `Amin Tasharofi`).
 
 ---
 
-### روش دوم: اجرای دستی به صورت محلی (Local Development)
+### Method 2: Manual Local Development
 
-#### پیش‌نیازها:
-- Node.js (نسخه ۱۸ یا بالاتر)
-- Golang (نسخه ۱.۲۲ یا بالاتر)
-- پایگاه‌داده PostgreSQL فعال
+#### Prerequisites:
+- Node.js (v18 or higher)
+- Golang (v1.22 or higher)
+- Running PostgreSQL database instance
 
-#### گام اول: راه‌اندازی دیتابیس و بک‌اند (Golang)
+#### Step 1: Database & Backend Setup (Golang)
 
-۱. وارد پوشه `backend` شوید:
+1. Navigate to the `backend` directory:
    ```bash
    cd backend
    ```
-۲. فایل `.env` را در صورت نیاز ویرایش کنید (تنظیمات پیش‌فرض برای دیتابیس محلی تنظیم شده است):
+2. Edit the `.env` file if necessary (default values are preconfigured for local Postgres):
    ```env
    PORT=8080
    DB_HOST=localhost
@@ -55,181 +55,181 @@ docker compose up --build
    DB_NAME=users_db
    DB_SSLMODE=disable
    ```
-۳. ایجاد دیتابیس در PostgreSQL:
+3. Create the database in PostgreSQL:
    ```bash
    psql -U postgres -c "CREATE DATABASE users_db;"
    ```
-۴. اجرای سرور بک‌اند (مایگریشن‌ها و Seed اولیه به صورت اتوماتیک اجرا می‌شوند):
+4. Run the backend server (migrations and seed data will run automatically on startup):
    ```bash
    go run cmd/server/main.go
    ```
 
-تست‌های واحد بک‌اند نیز با دستور زیر قابل اجرا هستند:
+Backend unit tests can be executed with:
 ```bash
 go test -v ./...
 ```
 
-#### گام دوم: راه‌اندازی فرانت‌اند (Next.js)
+#### Step 2: Frontend Setup (Next.js)
 
-۱. در یک ترمینال دیگر وارد پوشه `frontend` شوید:
+1. In a separate terminal, navigate to the `frontend` directory:
    ```bash
    cd frontend
    ```
-۲. نصب پکیج‌ها:
+2. Install dependencies:
    ```bash
    npm install
    ```
-۳. فایل تنظیمات محیطی `.env.local`:
+3. Configure environment variables in `.env.local`:
    ```env
    NEXT_PUBLIC_API_URL=http://localhost:8080
    ```
-۴. اجرای حالت توسعه:
+4. Run the development server:
    ```bash
    npm run dev
    ```
-۵. مرورگر خود را باز کرده و به آدرس [http://localhost:3000](http://localhost:3000) مراجعه کنید.
+5. Open your browser and navigate to [http://localhost:3000](http://localhost:3000).
 
 ---
 
-## ۲. تکنولوژی‌ها و کتابخانه‌های استفاده‌شده
+## 2. Tech Stack & Libraries
 
 ### Frontend:
-- **Next.js (App Router):** فریم‌ورک استاندارد مدرن ری‌اکت با عملکرد بهینه و پشتیبانی داخلی از ساختارهای کلاینت و سرور.
-- **TypeScript:** تایپ‌استاتیک قوی برای مدل‌ها، پارامترها و پاسخ‌های سرور به منظور حذف کامل خطاهای زمان اجرا.
-- **Tailwind CSS:** طراحی رابط کاربری واکنش‌گرا (Responsive) و مدرن همراه با انیمیشن‌های نرم.
-- **Lucide React:** مجموعه آیکون‌های استاندارد و سبک جهت ارتقای زیبایی و خوانایی بصری.
+- **Next.js (App Router):** Modern React framework offering optimal performance, server/client component boundaries, and efficient rendering.
+- **TypeScript:** Strong static typing for models, API params, and server responses to eliminate runtime errors.
+- **Tailwind CSS:** Responsive, modern UI styling with clean transitions and animations.
+- **Lucide React:** Standard, lightweight icon set for clean and intuitive visual hierarchy.
 
 ### Backend:
-- **Golang (Go 1.22+):** زبانی سریع، نوع‌ایمن، همگام با کمترین مصرف منابع حافظه و عملکرد بالا در هندل کردن ترافیک وب.
-- **Chi Router (`github.com/go-chi/chi/v5`):** روتر مینیمال، سازگار با `net/http` استاندارد، با قابلیت پشتیبانی از ساب‌روترها و میدل‌ویرها.
-- **Chi CORS (`github.com/go-chi/cors`):** مدیریت دسترسی فرانت‌اند و تبادل هدرهای مجاز CORS.
-- **PostgreSQL + `github.com/lib/pq`:** پایگاه‌داده رابطه‌ای قدرتمند همراه با اتصال پولینگ (`Connection Pooling`) و تراکنش‌های امن.
+- **Golang (Go 1.22+):** High-performance, statically typed language with low memory footprint and excellent concurrency handling.
+- **Chi Router (`github.com/go-chi/chi/v5`):** Lightweight, idiomatic router compatible with standard `net/http`, featuring subrouting and middleware support.
+- **Chi CORS (`github.com/go-chi/cors`):** Middleware for managing CORS headers and frontend access control.
+- **PostgreSQL + `github.com/lib/pq`:** Robust relational database with connection pooling and secure transactions.
 
 ---
 
-## ۳. ساختار کلی پروژه
+## 3. Project Architecture
 
-پروژه بر اساس الگوهای استاندارد مهندسی نرم‌افزار و معماری لایه‌ای تفکیک شده است:
+The project follows standard software engineering principles and layered architecture:
 
 ```
 user-management/
-├── backend/                       # سرویس بک‌اند به زبان Go
+├── backend/                       # Go Backend Service
 │   ├── cmd/
 │   │   └── server/
-│   │       └── main.go            # Entrypoint سرور، اتصال دیتابیس و Graceful Shutdown
+│   │       └── main.go            # Server entrypoint, DB connection, and graceful shutdown
 │   ├── internal/
-│   │   ├── config/                # بارگذاری متغیرهای محیطی با مقادیر پیش‌فرض
-│   │   ├── database/              # اتصال پولینگ، مایگریشن خودکار و Seeder اولیه ۴۷ کاربر
-│   │   ├── handler/               # لایه انتقال HTTP (کنترلرها، پارس کوئری، فرمت پاسخ‌ها)
-│   │   ├── model/                 # ساختار داده‌ها (User, Pagination, Responses)
-│   │   ├── repository/            # لایه دسترسی به دیتابیس با پرس‌وجوهای بهینه‌شده
-│   │   └── service/               # لایه منطق بیزینس و اعتبارسنجی ورودی‌ها
+│   │   ├── config/                # Environment variable loader with defaults
+│   │   ├── database/              # DB connection pooling, auto-migration, and initial seeder (47 users)
+│   │   ├── handler/               # HTTP transport layer (controllers, query parsing, response formatting)
+│   │   ├── model/                 # Data structures (User, Pagination, Responses)
+│   │   ├── repository/            # Database access layer with optimized SQL queries
+│   │   └── service/               # Business logic layer and input validation
 │   ├── Dockerfile
 │   └── go.mod
 │
-├── frontend/                      # پنل مدیریت به زبان Next.js و TypeScript
+├── frontend/                      # Next.js & TypeScript Admin Dashboard
 │   ├── src/
 │   │   ├── app/
-│   │   │   ├── layout.tsx         # لایوت سراسری با پشتیبانی کامل از زبان فارسی و راست‌چین (RTL)
-│   │   │   ├── page.tsx           # صفحه اصلی داشبورد و ترکیب کامپوننت‌ها
-│   │   │   └── globals.css        # استایل‌های تم و متغیرها
+│   │   │   ├── layout.tsx         # Global layout with RTL support and theme styling
+│   │   │   ├── page.tsx           # Main dashboard page composing all components
+│   │   │   └── globals.css        # Global CSS variables and styling
 │   │   ├── components/
-│   │   │   ├── ui/                # کامپوننت‌های پایه (Button, Badge, Modal, Skeleton, Toast)
-│   │   │   └── users/             # کامپوننت‌های تخصصی مدیریت کاربران:
-│   │   │       ├── UserTable.tsx         # جدول کاربران + هندل حالات مختلف
-│   │   │       ├── UserPagination.tsx    # صفحه‌بندی سمت سرور و انتخاب تعداد در صفحه
-│   │   │       ├── UserSearchBar.tsx     # جستجوی نام/ایمیل با قابلیت پاک‌سازی سریع
-│   │   │       ├── UserDetailModal.tsx   # مودال نمایش جزئیات کامل و مستقل از جدول
-│   │   │       └── UserStatusToggle.tsx  # تغییر وضعیت کاربر با نمایش لودینگ اختصاصی
+│   │   │   ├── ui/                # Base UI components (Button, Badge, Modal, Skeleton, Toast)
+│   │   │   └── users/             # User management components:
+│   │   │       ├── UserTable.tsx         # User table handling various UI states
+│   │   │       ├── UserPagination.tsx    # Server-side pagination and page size selector
+│   │   │       ├── UserSearchBar.tsx     # Debounced name/email search with quick clear
+│   │   │       ├── UserDetailModal.tsx   # Detailed user modal fetched independently
+│   │   │       └── UserStatusToggle.tsx  # User status toggle with dedicated loading indicator
 │   │   ├── hooks/
-│   │   │   ├── useDebounce.ts     # هوک دیبانس برای جلوگیری از ارسال ریکوئست‌های مکرر
-│   │   │   ├── useUsers.ts        # مدیریت استیت لیست کاربران، صفحه‌بندی و تغییر وضعیت
-│   │   │   └── useUserDetail.ts   # هوک دریافت مستقل جزئیات کاربر از API بر اساس ID
+│   │   │   ├── useDebounce.ts     # Debounce hook to prevent excessive API requests
+│   │   │   ├── useUsers.ts        # Manages user list state, pagination, and status updates
+│   │   │   └── useUserDetail.ts   # Hook for fetching standalone user details by ID
 │   │   ├── lib/
-│   │   │   └── api-client.ts      # کلاینت ماژولار Fetch با مدیریت استاندارد خطاها
+│   │   │   └── api-client.ts      # Modular Fetch client with standard error handling
 │   │   ├── services/
-│   │   │   └── userService.ts     # متدهای دسترسی به اندپوینت‌های کاربران
+│   │   │   └── userService.ts     # API service methods for user endpoints
 │   │   └── types/
-│   │       └── user.ts            # تعاریف تایپ‌های داده TypeScript
+│   │       └── user.ts            # TypeScript type definitions
 │   ├── Dockerfile
 │   ├── package.json
 │   └── tsconfig.json
 │
-├── docker-compose.yml             # ارکستراسیون کامل Postgres + Backend + Frontend
+├── docker-compose.yml             # Full orchestration for Postgres + Backend + Frontend
 └── README.md
 ```
 
 ---
 
-## ۴. روش مدیریت State
+## 4. State Management
 
-برای این تسک از الگوی **Custom React Hooks** به همراه Stateهای داخلی استفاده شده است (`useUsers` و `useUserDetail`):
+This project uses **Custom React Hooks** alongside localized state (`useUsers` and `useUserDetail`):
 
-۱. **تفکیک دغدغه‌ها (Separation of Concerns):**
-   - هوک `useUsers` تمامی متغیرهای مربوط به جدول (صفحه جاری، تعداد در صفحه، ورودی جستجو، متن جستجوی دیبانس‌شده، لیست کاربران، تعداد کل و فلگ‌های لودینگ/خطا) را کپسوله کرده است.
-   - کامپوننت‌ها صرفاً رندرکننده (Presentation) هستند و هیچ منطق واکشی داده‌ای در آن‌ها مخلوط نشده است.
+1. **Separation of Concerns:**
+   - The `useUsers` hook encapsulates all state related to the user table (current page, limit per page, search input query, debounced search query, users list, total records count, loading flags, and error state).
+   - Components act strictly as presentation layers without embedding any data-fetching or business logic.
 
-۲. **مدیریت فیلتر و جستجو:**
-   - با تغییر مقدار جستجو توسط کاربر، هوک `useDebounce` با وقفه ۴۰۰ میلی‌ثانیه‌ای مانع ارسال درخواست با هر کاراکتر می‌شود.
-   - به محض تغییر فیلتر جستجو، صفحه کاربر به طور خودکار به صفحه ۱ ریست می‌شود تا نتایج صحیح نمایش یابند.
+2. **Search and Filter Handling:**
+   - As the user types in the search bar, the `useDebounce` hook introduces a 400ms delay, preventing an API call on every keystroke.
+   - When the search term changes, the current page automatically resets to page 1 to display correct filtered results.
 
-۳. **به‌روزرسانی بهینه وضعیت (Optimistic / Immediate Local Sync):**
-   - با کلیک روی تغییر وضعیت، یک متغیر `updatingUserId` فعال می‌شود تا فقط همان دکمه در وضعیت لودینگ قرار گیرد (نه کل جدول).
-   - پس از دریافت پاسخ موفق از API اندپوینت `PATCH /api/v1/users/:id/status`، رکورد مربوطه در لیست استیت کلاینت فوراً به‌روزرسانی شده و پیام فیدبک مناسب از طریق سیستم Toast نمایش داده می‌شود.
+3. **Optimized Status Updates (Immediate Local Sync & Granular Loading):**
+   - When toggling a user's status, an `updatingUserId` state tracks the specific user being updated, displaying a spinner only on that specific toggle button rather than locking or refreshing the entire table.
+   - Upon receiving a successful response from `PATCH /api/v1/users/:id/status`, the corresponding user in the client-side state is updated immediately, and a toast notification provides instant user feedback.
 
 ---
 
-## ۵. روش مدیریت درخواست‌های API
+## 5. API Request Management
 
-۱. **کلاینت مرکزی (`api-client.ts`):**
-   - ایجاد یک کلاینت یکپارچه بر پایه `fetch` استاندارد با پشتیبانی از پارامترهای کوئری پویا، هدرهای پیش‌فرض و استخراج خطاهای سرور.
-   - مدیریت متغیر محیطی `NEXT_PUBLIC_API_URL` برای انعطاف‌پذیری در محیط‌های Local و Production.
+1. **Centralized HTTP Client (`api-client.ts`):**
+   - Built on standard `fetch` with support for dynamic query parameters, default headers, and centralized server error extraction.
+   - Configurable via `NEXT_PUBLIC_API_URL` for smooth switching between local and production environments.
 
-۲. **سرویس کاربران (`userService.ts`):**
-   - تمامی ارتباطات شبکه در لایه Service تعریف شده‌اند و توابع pure و تست‌پذیر تولید می‌کنند:
+2. **User Service Layer (`userService.ts`):**
+   - All network interactions are encapsulated within pure, testable service functions:
      - `getUsers({ page, limit, search })`
      - `getUserById(id)`
      - `updateUserStatus(id, status)`
 
-۳. **پوشش تمامی حالات رابط کاربری (UI States):**
-   - **Loading State:** در زمان واکشی اطلاعات، اسکلتون‌های زیبا و متناسب با ابعاد سطرها نمایش داده می‌شوند تا از پرش محتوا (Layout Shift) جلوگیری شود.
-   - **Error State:** در صورت بروز خطای شبکه یا خطای سرور، پیام اختصاصی دریافت شده به همراه دکمه «تلاش مجدد» در مرکز صفحه قرار می‌گیرد.
-   - **Empty State:** اگر در سیستم هیچ کاربری ثبت نشده باشد، پیام خوشامد و بدون داده نمایش داده می‌شود.
-   - **No Search Result State:** اگر جستجو نتیجه‌ای نداشته باشد، پیام شفاف «کاربری با عبارت «...» یافت نشد» به همراه دکمه پاک کردن فیلتر ارائه می‌شود.
-   - **Success State:** جدول با استایل شیک، افکت هاور و دکمه‌های عملیاتی نمایش می‌یابد.
+3. **Comprehensive UI States:**
+   - **Loading State:** Displays sleek skeleton loaders matching the exact dimensions of table rows to eliminate layout shifts.
+   - **Error State:** Captures network or server errors, displaying a user-friendly error message alongside a "Retry" button centered in the view.
+   - **Empty State:** When no users exist in the database, displays a clean empty state graphic and welcoming message.
+   - **No Search Results State:** When a search query matches no records, displays a clear message ("No users found matching '...'") with a button to reset the search filter.
+   - **Success State:** Displays an interactive, responsive table with hover highlights, status badges, and action buttons.
 
 ---
 
-## ۶. دلایل انتخاب راهکارهای اصلی
+## 6. Key Architectural & Implementation Decisions
 
-۱. **استفاده از Clean Architecture در Go:**
-   - لایه‌های Repository ،Service و Handler کاملاً از یکدیگر تفکیک شده‌اند.
-   - وابستگی‌ها بر پایه Interfaceها طراحی شده‌اند که امکان نوشتن Unit Test بدون وابستگی به دیتابیس زنده را میسر می‌سازد (نمونه تست در `user_service_test.go`).
+1. **Clean Architecture in Go:**
+   - Strict separation of Repository, Service, and Handler layers.
+   - Dependencies are injected via interfaces, enabling comprehensive unit testing without requiring a live database connection (see `user_service_test.go`).
 
-۲. **استفاده از Debounce در جستجو:**
-   - بدون دیبانس، تایپ سریع یک کلمه ۵ حرفی ۵ ریکوئست همزمان به سرور ارسال می‌کند که علاوه بر فشار مضاعف روی دیتابیس، ممکن است به دلیل پدیده Race Condition نتایج قدیمی جایگزین نتایج جدید شوند. با دیبانس ۴۰۰ میلی‌ثانیه‌ای، تنها زمانی ریکوئست ارسال می‌شود که کاربر تایپ را متوقف کرده باشد.
+2. **Search Debouncing:**
+   - Without debouncing, quickly typing a 5-character search term would trigger 5 concurrent requests. This causes unnecessary database load and can lead to race conditions where older query responses overwrite newer ones. A 400ms debounce ensures requests are only dispatched after the user finishes typing.
 
-۳. **صفحه‌بندی صددرصد سمت سرور (Server-side Pagination):**
-   - مطابق صورت تسک، دریافت کل رکوردها و فیلتر روی کلاینت در مقیاس‌های بزرگ سازمانی غیرعملی است. بک‌اند با استفاده از پرس‌وجوی بهینه‌شده `LIMIT` و `OFFSET` و اندیس‌های پایگاه داده، پاسخ را در کسر کوچکی از میلی‌ثانیه تحویل می‌دهد.
+3. **100% Server-side Pagination:**
+   - In real-world enterprise applications, client-side pagination over complete datasets does not scale. The Go backend utilizes optimized `LIMIT` and `OFFSET` SQL queries with indexed columns, returning paginated subsets in milliseconds.
 
-۴. **دریافت مستقل جزئیات کاربر (`GET /api/v1/users/:id`):**
-   - مطابق نیازمندی شماره ۴، جزئیات کاربر نباید صرفاً از اطلاعات خلاصه جدول کپی شود. دیتابیس و API فیلدهای تکمیلی مانند شماره تماس، سمت کاری، تصویر آواتار، بیوگرافی و زمان آخرین به‌روزرسانی را در اندپوینت تک‌کاربر ارائه می‌دهند که با باز شدن مودال واکشی می‌شود.
+4. **Independent User Details Endpoint (`GET /api/v1/users/:id`):**
+   - In accordance with task requirements, user details are not merely copied from existing table rows. The database and single-user endpoint provide extended fields (phone number, role/job title, avatar URL, biography, and last update timestamp) fetched on demand when opening the modal.
 
-۵. **طراحی راست‌چین (RTL) با استاندارد وب فارسی:**
-   - صفحه با در نظر گرفتن چیدمان راست‌چین و فرمت تاریخ شمسی (`fa-IR`) طراحی شده است و ایمیل‌ها و شماره‌ها برای خوانایی بهتر با ویژگی `dir="ltr"` تنظیم شده‌اند.
+5. **Right-to-Left (RTL) & Localization Consideration:**
+   - The UI includes RTL layout support and Persian date formatting (`fa-IR`), while maintaining `dir="ltr"` for email addresses and phone numbers to ensure readability and formatting standards.
 
 ---
 
-## ۷. مستندات API
+## 7. API Documentation
 
-### ۱. دریافت لیست کاربران (همراه با صفحه‌بندی و فیلتر جستجو)
-- **متد:** `GET`
-- **اندپوینت:** `/api/v1/users`
-- **پارامترهای کوئری:**
-  - `page`: شماره صفحه (پیش‌فرض: `1`)
-  - `limit`: تعداد در هر صفحه (پیش‌فرض: `10`)
-  - `search`: عبارت جستجو در نام و ایمیل (اختیاری)
-- **پاسخ نمونه (200 OK):**
+### 1. Get Users List (with Pagination & Search)
+- **Method:** `GET`
+- **Endpoint:** `/api/v1/users`
+- **Query Parameters:**
+  - `page`: Page number (default: `1`)
+  - `limit`: Items per page (default: `10`)
+  - `search`: Search term across name and email (optional)
+- **Sample Response (200 OK):**
 ```json
 {
   "data": [
@@ -249,10 +249,10 @@ user-management/
 
 ---
 
-### ۲. مشاهده جزئیات یک کاربر
-- **متد:** `GET`
-- **اندپوینت:** `/api/v1/users/:id`
-- **پاسخ نمونه (200 OK):**
+### 2. Get User Details
+- **Method:** `GET`
+- **Endpoint:** `/api/v1/users/:id`
+- **Sample Response (200 OK):**
 ```json
 {
   "id": 1,
@@ -270,16 +270,16 @@ user-management/
 
 ---
 
-### ۳. تغییر وضعیت کاربر
-- **متد:** `PATCH`
-- **اندپوینت:** `/api/v1/users/:id/status`
-- **بدنه درخواست (Request Body):**
+### 3. Update User Status
+- **Method:** `PATCH`
+- **Endpoint:** `/api/v1/users/:id/status`
+- **Request Body:**
 ```json
 {
   "status": "inactive"
 }
 ```
-- **پاسخ نمونه (200 OK):**
+- **Sample Response (200 OK):**
 ```json
 {
   "id": 1,
